@@ -9,7 +9,7 @@ DATABASE = {
     #'host': 'localhost',
     #'port': '5432',
     #'username': 'vernonhughes',
-    #'password': 'J@Messi123(4)',
+    #'password': 'google-mentorship',
    'database': '/app/app.db'
 }
 
