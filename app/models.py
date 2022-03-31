@@ -13,7 +13,6 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     emergency_contact = db.Column(db.String(120), index=True)
     password_hash = db.Column(db.String(128))
-    medicine = db.relationship("Medicine", backref='consumer', lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -26,15 +25,21 @@ class User(UserMixin, db.Model):
 
 
 class Medicine(db.Model):
-    __tablename__ = 'medicine'
+    __tablename__ = 'medicines'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     dose = db.Column(db.Integer, index=True)
+    pills = db.Column(db.Integer, index=True)
     cycle = db.Column(db.Integer, index=True)
     period = db.Column(db.Float, index=True)
-    amount = db.Column(db.Integer, index=True)
-    taken = db.Column(db.Boolean, index=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    taken = db.Column(db.Boolean, index=True, default=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User',backref=db.backref('medicines', lazy=True))
+
+    def __repr__(self):
+        return '<Medicine {} for {}>'.format(self.name, self.user)
 
 @login.user_loader
 def load_user(id):
