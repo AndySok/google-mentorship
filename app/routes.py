@@ -1,8 +1,8 @@
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, AddMedicationForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
+from app.models import User, Medicine
 from werkzeug.urls import url_parse
 
 @app.route('/')
@@ -50,3 +50,15 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/add_medication', methods=['GET', 'POST'])
+@login_required
+def add_medication():
+    form = AddMedicationForm()
+    if form.validate_on_submit():
+        medication = Medicine(name = form.name.data, dose = form.dose.data,
+            pills = form.pills.data, period = form.period.data, user = current_user)
+        db.session.add(medication)
+        db.session.commit()
+        flash('Congratulations, you have entered new medication!')
+    return render_template('add_medication.html', title='Add Medication', form=form)
