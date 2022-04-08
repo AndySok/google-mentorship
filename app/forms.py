@@ -33,7 +33,7 @@ class AddMedicationForm(FlaskForm):
     dose = FloatField('Dose (mg)', validators=[DataRequired()])
     pills = IntegerField('Pills per Cycle', validators=[DataRequired()])
     period = FloatField('Period (hrs)', validators=[DataRequired()])
-    submit = SubmitField('Register')
+    submit = SubmitField('Add')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
