@@ -35,12 +35,6 @@ class AddMedicationForm(FlaskForm):
     period = FloatField('Period (hrs)', validators=[DataRequired()])
     submit = SubmitField('Add')
 
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if user is not None:
-            raise ValidationError('Please use a different username.')
-
-    def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
-        if user is not None:
-            raise ValidationError('Please use a different email address.')
+class FindMedicationForm(FlaskForm):
+    name = StringField('Medication Name', validators=[DataRequired()])
+    submit = SubmitField('Submit')
