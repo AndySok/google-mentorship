@@ -2,4 +2,9 @@
 
 {% block app_content %}
 Hello {{ user.username }}, welcome to the homepage.
+{% for med in medications %}
+    <div class="product-item">
+        <h3>{{ med.name }}</h3>
+     </div>
+{% endfor %}
 {% endblock %}
