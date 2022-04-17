@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    {% block title %}<h1>{{ title }}</h1>{% endblock %}
+    <br></br>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Dose</th>
+            <th>Pills</th>
+            <th>Cycle</th>
+            <th>Period</th>
+            <th>Taken</th>
+        </tr>
+    {% for medication in medications %}
+        <tr>
+            <td>{{ medication.name }}</td>
+            <td>{{ medication.dose }}</td>
+            <td>{{ medication.pills }}</td>
+            <td>{{ medication.cycle }}</td>
+            <td>{{ medication.period }}</td>
+            <td>{{ medication.taken }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    <br></br>
+    <p><a href="{{ url_for('add_medication') }}">Add Medication</a></p>
+    <p><a href="{{ url_for('choose_medication') }}">Edit Medication</a></p>
+    <p><a href="{{ url_for('delete_medication') }}">Delete Medication</a></p>
+{% endblock %}
