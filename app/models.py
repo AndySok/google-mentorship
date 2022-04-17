@@ -8,14 +8,15 @@ from flask_login import UserMixin
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    fname = db.Column(db.String(64), index=True)
+    lname = db.Column(db.String(64), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
-    emergency_contact = db.Column(db.String(120), index=True)
+    update_privileges = db.Column(db.Boolean, index=True, default=False)
     password_hash = db.Column(db.String(128))
 
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return '<User {}>'.format(self.fname)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -24,9 +25,8 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def check_medications(self):
-        medications = Medicine.query.filter_by(user_id=self.id)
+        medications = Medicine.query.filter_by(user_id=current_user.id).all()
         return medications
-
 
 class Medicine(db.Model):
     __tablename__ = 'medicines'

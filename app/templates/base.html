@@ -19,7 +19,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('add_medication') }}">Medication</a></li>
+                <li><a href="{{ url_for('medication') }}">Medication</a></li>
                 <li><a href="{{ url_for('index') }}">ChatBot</a></li>
                 <li><a href="{{ url_for('index') }}">About Us</a></li>
                 <li><a href="{{ url_for('index') }}">Contact</a></li>
@@ -45,7 +45,14 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
-
         {% block app_content %}{% endblock %}
     </div>
+    <style>
+      table, th, td {
+        border: 1px solid;
+        padding: 8px;
+        width: 100%;
+        padding-right: 50px;
+      }
+    </style>
 {% endblock %}

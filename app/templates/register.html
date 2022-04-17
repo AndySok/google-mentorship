@@ -5,9 +5,16 @@
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}<br>
-            {% for error in form.username.errors %}
+            {{ form.fname.label }}<br>
+            {{ form.fname(size=32) }}<br>
+            {% for error in form.fname.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.lname.label }}<br>
+            {{ form.lname(size=32) }}<br>
+            {% for error in form.lname.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
@@ -19,9 +26,9 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.contact_email.label }}<br>
-            {{ form.contact_email(size=64) }}<br>
-            {% for error in form.email.errors %}
+            {{ form.update_privileges.label }}<br>
+            {{ form.update_privileges(size=16) }}<br>
+            {% for error in form.update_privileges.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
