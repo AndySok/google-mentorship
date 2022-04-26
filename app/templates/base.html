@@ -1,5 +1,10 @@
 {% extends 'bootstrap/base.html' %}
 
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
+{% endblock %}
+
 {% block title %}
     {% if title %}{{ title }} - Unnamed Project 333{% else %}Welcome to Unnamed Project 333!{% endif %}
 {% endblock %}
@@ -47,12 +52,4 @@
         {% endwith %}
         {% block app_content %}{% endblock %}
     </div>
-    <style>
-      table, th, td {
-        border: 1px solid;
-        padding: 8px;
-        width: 100%;
-        padding-right: 50px;
-      }
-    </style>
 {% endblock %}
