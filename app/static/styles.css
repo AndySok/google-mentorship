@@ -1,0 +1,10 @@
+table, th, td {
+  border: 1px solid;
+  padding: 8px;
+  width: 100%;
+  padding-right: 50px;
+}
+
+.navbar {
+  font-family: cursive;
+}

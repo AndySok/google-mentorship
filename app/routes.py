@@ -58,7 +58,7 @@ def register():
 @app.route('/medication', methods=['GET'])
 @login_required
 def medication():
-    medications = Medicine.query.filter_by(user_id=current_user.id).all()
+    medications = current_user.check_medications()
     return render_template('medication.html', title='Medication', medications=medications)
 
 @app.route('/add_medication', methods=['GET', 'POST'])
@@ -71,6 +71,7 @@ def add_medication():
         db.session.add(medication)
         db.session.commit()
         flash('Congratulations, you have entered new medication!')
+        return redirect(url_for('medication'))
     return render_template('add_medication.html', title='Add Medication', form=form)
 
 @app.route('/choose_medication', methods=['GET', 'POST'])
@@ -78,17 +79,17 @@ def add_medication():
 def choose_medication():
     form = FindMedicationForm()
     if form.validate_on_submit():
-        medication = Medicine.query.filter_by(name=form.name.data).first()
+        medication = Medicine.query.filter_by(name=form.name.data, user_id=current_user.id).first()
         if medication is None:
             flash('This product does not exist')
-            return redirect(url_for('choose_product'))
+            return redirect(url_for('choose_medication'))
         return redirect(url_for('edit_medication', medication_name=medication.name))
     return render_template('choose_medication.html', title='Choose Medication', form=form)
 
 @app.route('/edit_medication/<medication_name>', methods=['GET', 'POST'])
 @login_required
 def edit_medication(medication_name):
-    medication = Medicine.query.filter_by(name=medication_name).first()
+    medication = Medicine.query.filter_by(name=medication_name, user_id=current_user.id).first()
     form = AddMedicationForm()
     if form.validate_on_submit():
         medication.name = form.name.data
@@ -97,7 +98,7 @@ def edit_medication(medication_name):
         medication.period = form.period.data
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('index'))
+        return redirect(url_for('medication'))
     elif request.method == 'GET':
         form.name.data = medication.name
         form.dose.data = medication.dose
@@ -110,12 +111,12 @@ def edit_medication(medication_name):
 def delete_medication():
     form = FindMedicationForm()
     if form.validate_on_submit():
-        medication = Medicine.query.filter_by(name=form.name.data).first()
+        medication = Medicine.query.filter_by(name=form.name.data, user_id=current_user.id).first()
         if medication is None:
             flash('This medication does not exist')
             return redirect(url_for('delete_medication'))
         db.session.delete(medication)
         db.session.commit()
         flash('Medication deleted successfully')
-        return redirect(url_for('index'))
+        return redirect(url_for('medication'))
     return render_template('choose_medication.html', title='Delete Medication', form=form)
