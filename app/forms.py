@@ -17,7 +17,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Register')
+    submit = SubmitField('Submit')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
@@ -38,4 +38,8 @@ class AddMedicationForm(FlaskForm):
 
 class FindMedicationForm(FlaskForm):
     name = StringField('Medication Name', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+class CyclesForm(FlaskForm):
+    cycles = IntegerField('Cycle')
     submit = SubmitField('Submit')

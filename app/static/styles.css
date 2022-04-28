@@ -1,8 +1,31 @@
 table, th, td {
   border: 1px solid;
   padding: 8px;
-  width: 100%;
+  width: 50%;
   padding-right: 50px;
+}
+
+h1 {
+  font-size: 40px;
+  font-family: apple-chancery;
+  font-weight: bold;
+}
+
+table {
+  box-shadow: 2px 2px 2px #999;
+}
+
+table:hover {
+  transform: scale(1.03);
+}
+
+th {
+  color: #1C1D21;
+  background-color: #004E98;
+}
+
+tr:nth-child(odd){
+  background-color: #C3D6EA;
 }
 
 .navbar {
