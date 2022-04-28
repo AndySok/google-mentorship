@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>Register</h1>
+    <h1>{% block title %}{{title }}{% endblock %}</h1>
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
@@ -32,6 +32,7 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+        {% if title == "Register" %}
         <p>
             {{ form.password.label }}<br>
             {{ form.password(size=32) }}<br>
@@ -46,6 +47,7 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+        {% endif %}
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}
