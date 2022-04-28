@@ -24,6 +24,9 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def check_privileges(self):
+        return self.update_privileges
+
     def check_medications(self):
         medications = Medicine.query.filter_by(user_id=self.id).all()
         return medications
@@ -32,7 +35,7 @@ class Medicine(db.Model):
     __tablename__ = 'medicines'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True, unique=True)
+    name = db.Column(db.String(64), index=True)
     dose = db.Column(db.Integer, index=True)
     pills = db.Column(db.Integer, index=True)
     cycle = db.Column(db.Integer, index=True)
