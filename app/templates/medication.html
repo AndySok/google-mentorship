@@ -25,6 +25,33 @@
         </tr>
     {% endfor %}
     </table>
+    <br>
+    <table>
+        <tr>
+            <th>Cycle</th>
+            <th>Time</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+            <th>Sunday</th>
+        </tr>
+    {% for cycle in cycles %}
+        <tr>
+            <td>{{ cycle.cycle }}</td>
+            <td>{{ cycle.time }}</td>
+            <td>{{ cycle.get_medications() }}</td>
+            <td>{{ cycle.get_medications() }}</td>
+            <td>{{ cycle.get_medications() }}</td>
+            <td>{{ cycle.get_medications() }}</td>
+            <td>{{ cycle.get_medications() }}</td>
+            <td>{{ cycle.get_medications() }}</td>
+            <td>{{ cycle.get_medications() }}</td>
+        </tr>
+    {% endfor %}
+    </table>
     <br></br>
     <p><a href="{{ url_for('add_medication') }}">Add Medication</a></p>
     <p><a href="{{ url_for('choose_medication')}}">Edit Medication</a></p>

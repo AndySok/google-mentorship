@@ -44,7 +44,7 @@ class ProfileForm(FlaskForm):
 class AddMedicationForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     dose = FloatField('Dose (mg)', validators=[DataRequired()])
-    cycle = FloatField('Cycle', validators=[DataRequired()])
+    cycle = IntegerField('Cycle', validators=[DataRequired()])
     pills = IntegerField('Pills per Cycle', validators=[DataRequired()])
     period = FloatField('Period (hrs)', validators=[DataRequired()])
     submit = SubmitField('Add')
@@ -52,8 +52,3 @@ class AddMedicationForm(FlaskForm):
 class FindMedicationForm(FlaskForm):
     name = StringField('Medication Name', validators=[DataRequired()])
     submit = SubmitField('Submit')
-
-class CycleTakenForm(FlaskForm):
-    cycle = IntegerField('Cycle', validators=[DataRequired()])
-    taken = BooleanField('Taken', validators=[DataRequired()])
-    submit = SubmitField('Update Changes')
