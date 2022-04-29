@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, ProfileForm, CycleTakenForm
+from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, ProfileForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Medicine
 from werkzeug.urls import url_parse
@@ -83,7 +83,7 @@ def update_info():
 @login_required
 def medication():
     medications = current_user.check_medications()
-    form = CycleTakenForm()
+    #form = CycleTakenForm()
     #for medication in medications:
     #    if form.validate_on_submit():
     #        if current_user.check_privileges():
@@ -97,7 +97,8 @@ def medication():
     #    if request.method == 'GET':
     #        form.cycle.data = medication.cycle.cycle
     #        form.taken.data = medication.taken
-    return render_template('medication.html', title='Medication', medications=medications, form=form)
+    cycles = current_user.get_cycles()
+    return render_template('medication.html', title='Medication', medications=medications, cycles=cycles)
 
 @app.route('/add_medication', methods=['GET', 'POST'])
 @login_required
@@ -108,6 +109,8 @@ def add_medication():
             medication = Medicine(name = form.name.data, dose = form.dose.data,
                 pills = form.pills.data, period = form.period.data, user = current_user)
             medication.add_to_cycle(form.cycle.data)
+            medication.add_to_cycle(form.cycle.data)
+            medication.cycle_id = medication.cycle.id
             db.session.add(medication)
             db.session.commit()
             flash('Congratulations, you have entered new medication!')
@@ -143,6 +146,7 @@ def edit_medication(medication_id):
             medication.name = form.name.data
             medication.dose = form.dose.data
             medication.add_to_cycle(form.cycle.data)
+            medication.cycle_id = medication.cycle.id
             medication.pills = form.pills.data
             medication.period = form.period.data
             db.session.commit()

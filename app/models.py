@@ -37,6 +37,10 @@ class User(UserMixin, db.Model):
         medications = Medicine.query.filter_by(user_id=self.id).all()
         return medications
 
+    def get_cycles(self):
+        cycles = Cycle.query.filter_by(user_id=self.id).all()
+        return cycles
+
     def get_cycle(self, n):
         cycle = Cycle.query.filter_by(user_id=self.id).all()[n-1]
         return cycle
@@ -58,12 +62,10 @@ class Medicine(db.Model):
     cycle = db.relationship('Cycle',backref=db.backref('medicines', lazy=True))
 
     def __repr__(self):
-        return '<Medicine {} for {}>'.format(self.name, self.cycle.user)
+        return '{}'.format(self.name)
 
     def add_to_cycle(self, cycle_number):
-        cycle = Cycle.query.filter_by(cycle=cycle_number, user_id=self.user_id).first()
-        self.cycle = cycle
-        self.cycle_id = cycle.id
+        self.cycle = Cycle.query.filter_by(cycle=cycle_number, user_id=self.user_id).first()
 
 class Cycle(db.Model):
     __tablename__ = 'cycles'
