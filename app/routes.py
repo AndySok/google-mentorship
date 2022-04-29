@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, CyclesForm
+from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, ProfileForm, CycleTakenForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Medicine
 from werkzeug.urls import url_parse
@@ -49,6 +49,7 @@ def register():
         update_privileges=form.update_privileges.data
         user = User(fname=fname, lname=lname, email=email, update_privileges=update_privileges)
         user.set_password(form.password.data)
+        user.create_cycles()
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
@@ -59,7 +60,7 @@ def register():
 @login_required
 def update_info():
     if current_user.check_privileges():
-        form = RegistrationForm()
+        form = ProfileForm()
         if form.validate_on_submit():
             current_user.fname=form.fname.data
             current_user.lname=form.lname.data
@@ -67,22 +68,36 @@ def update_info():
             current_user.update_privileges=form.update_privileges.data
             db.session.commit()
             flash('Your changes have been saved.')
-            return redirect(url_for('medication'))
         elif request.method == 'GET':
             form.fname.data = current_user.fname
             form.lname.data = current_user.lname
             form.email.data = current_user.email
             form.update_privileges.data = current_user.update_privileges
-        return render_template('register.html', title='Update Info', form=form)
+        email = current_user.email
+        return render_template('register.html', title='Update Info', form=form, email=email)
     else:
         flash('You do not have update privileges.')
         return redirect(url_for('index'))
 
-@app.route('/medication', methods=['GET'])
+@app.route('/medication', methods=['GET', 'POST'])
 @login_required
 def medication():
     medications = current_user.check_medications()
-    return render_template('medication.html', title='Medication', medications=medications)
+    form = CycleTakenForm()
+    #for medication in medications:
+    #    if form.validate_on_submit():
+    #        if current_user.check_privileges():
+    #            medication.add_to_cycle(form.cycle.data)
+    #        else:
+    #            flash('You do not have update privileges')
+    #        medication.taken = medication.taken
+    #        db.session.commit()
+    #        flash('Your changes have been saved.')
+    #        return redirect(url_for('medication'))
+    #    if request.method == 'GET':
+    #        form.cycle.data = medication.cycle.cycle
+    #        form.taken.data = medication.taken
+    return render_template('medication.html', title='Medication', medications=medications, form=form)
 
 @app.route('/add_medication', methods=['GET', 'POST'])
 @login_required
@@ -92,6 +107,7 @@ def add_medication():
         if form.validate_on_submit():
             medication = Medicine(name = form.name.data, dose = form.dose.data,
                 pills = form.pills.data, period = form.period.data, user = current_user)
+            medication.add_to_cycle(form.cycle.data)
             db.session.add(medication)
             db.session.commit()
             flash('Congratulations, you have entered new medication!')
@@ -101,9 +117,9 @@ def add_medication():
         flash('You do not have update privileges.')
         return redirect(url_for('medication'))
 
-@app.route('/choose_medication/<purpose>', methods=['GET', 'POST'])
+@app.route('/choose_medication', methods=['GET', 'POST'])
 @login_required
-def choose_medication(purpose):
+def choose_medication():
     if current_user.check_privileges():
         form = FindMedicationForm()
         if form.validate_on_submit():
@@ -111,10 +127,7 @@ def choose_medication(purpose):
             if medication is None:
                 flash('This product does not exist')
                 return redirect(url_for('choose_medication'))
-            if purpose == "edit_medication":
-                return redirect(url_for('edit_medication', medication_id=medication.id))
-            elif purpose == "cycles":
-                return redirect(url_for('cycles', medication_id=medication.id))
+            return redirect(url_for('edit_medication', medication_id=medication.id))
         return render_template('choose_medication.html', title='Choose Medication', form=form)
     else:
         flash('You do not have update privileges.')
@@ -124,11 +137,12 @@ def choose_medication(purpose):
 @login_required
 def edit_medication(medication_id):
     if current_user.check_privileges():
-        medication = Medicine.query.filter_by(id=medication_id, user_id=current_user.id).first()
+        medication = Medicine.query.filter_by(id=medication_id).first()
         form = AddMedicationForm()
         if form.validate_on_submit():
             medication.name = form.name.data
             medication.dose = form.dose.data
+            medication.add_to_cycle(form.cycle.data)
             medication.pills = form.pills.data
             medication.period = form.period.data
             db.session.commit()
@@ -136,6 +150,7 @@ def edit_medication(medication_id):
             return redirect(url_for('medication'))
         elif request.method == 'GET':
             form.name.data = medication.name
+            form.cycle.data = medication.cycle.cycle
             form.dose.data = medication.dose
             form.pills.data = medication.pills
             form.period.data = medication.period
@@ -163,18 +178,11 @@ def delete_medication():
         flash('You do not have update privileges.')
         return redirect(url_for('medication'))
 
-@app.route('/cycles/<medication_id>', methods=['GET', 'POST'])
+@app.route('/taken/<med_id>/<taken>', methods=['POST'])
 @login_required
-def cycles(medication_id):
-    if current_user.check_privileges():
-        form = CyclesForm()
-        medication = Medicine.query.filter_by(id=medication_id, user_id=current_user.id).first()
-        if form.validate_on_submit():
-            medication.cycle = form.cycles.data
-            db.session.commit()
-            flash('Cycle updated successfully')
-            return redirect(url_for('medication'))
-        return render_template('cycles.html', title='Cycles', form=form, medication=medication.name)
-    else:
-        flash('You do not have update privileges.')
-        return redirect(url_for('medication'))
+def taken(med_id, taken):
+    medication = Medicine.query.filter_by(id=med_id, user_id=current_user.id).first()
+    medication.taken = taken
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('medication'))
