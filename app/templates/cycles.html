@@ -5,9 +5,9 @@
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.cycles.label }} for {{ medication }}<br>
-            {{ form.cycles(size=32) }}<br>
-            {% for error in form.cycles.errors %}
+            {{ form.cycle.label }} for {{ medication }}<br>
+            {{ form.cycle(size=32) }}<br>
+            {% for error in form.cycle.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
