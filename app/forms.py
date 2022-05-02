@@ -15,6 +15,7 @@ class RegistrationForm(FlaskForm):
     lname = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     update_privileges = BooleanField('Update Privileges')
+    patient = BooleanField('Patient')
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
@@ -54,7 +55,5 @@ class FindMedicationForm(FlaskForm):
     name = StringField('Medication Name', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
-class TakenForm(FlaskForm):
-    medications = SelectMultipleField('Taken', validators=[Optional()], coerce=int,
-        widget=CheckboxInput())
-    submit = SubmitField('Update Changes')
+class EmptyForm(FlaskForm):
+    submit = SubmitField('Submit')

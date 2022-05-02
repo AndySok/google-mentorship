@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, ProfileForm, TakenForm
+from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, ProfileForm, EmptyForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Medicine
 from werkzeug.urls import url_parse
@@ -47,7 +47,8 @@ def register():
         lname=form.lname.data
         email=form.email.data
         update_privileges=form.update_privileges.data
-        user = User(fname=fname, lname=lname, email=email, update_privileges=update_privileges)
+        patient=form.patient.data
+        user = User(fname=fname, lname=lname, email=email, update_privileges=update_privileges, isPatient=patient)
         user.set_password(form.password.data)
         user.create_cycles()
         db.session.add(user)
@@ -83,27 +84,8 @@ def update_info():
 @login_required
 def medication():
     medications = current_user.check_medications()
-    form = TakenForm()
-    #for medication in medications:
-    #    if form.validate_on_submit():
-    #        if current_user.check_privileges():
-    #            medication.add_to_cycle(form.cycle.data)
-    #        else:
-    #            flash('You do not have update privileges')
-    #        medication.taken = medication.taken
-    #        db.session.commit()
-    #        flash('Your changes have been saved.')
-    #        return redirect(url_for('medication'))
-    #    if request.method == 'GET':
-    #        form.cycle.data = medication.cycle.cycle
-    #        form.taken.data = medication.taken
-    #if form.validate_on_submit():
-    #    for i in range(0, len(medications)):
-    #        medications[i].taken = [form.medications.taken[i]]
-    #elif request.method == 'GET':
-    #    form.medications.taken = [medication.taken for medication in medications]
     cycles = current_user.get_cycles()
-    return render_template('medication.html', title='Medication', medications=medications, form=form, cycles=cycles)
+    return render_template('medication.html', title='Medication', medications=medications, cycles=cycles)
 
 @app.route('/add_medication', methods=['GET', 'POST'])
 @login_required
@@ -204,3 +186,17 @@ def taken_med(med_id, done):
         return redirect(url_for('medication'))
     else:
         flash('Not authenticated to make changes.')
+
+@app.route('/caretaker/<user_id>', methods=['GET', 'POST'])
+@login_required
+def caretaker(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        flash('User {} not found.'.format(user_id))
+        return redirect(url_for('index'))
+    if user == current_user:
+        flash('You cannot add yourself as a caretaker!')
+    current_user.set_caretaker(user)
+    db.session.commit()
+    flash('You set {} as a caretaker!'.format(user.fname))
+    return redirect(url_for('index'))
