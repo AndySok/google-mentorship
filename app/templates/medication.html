@@ -20,8 +20,16 @@
             <td>{{ medication.pills }}</td>
             <td>{{ medication.cycle.cycle }}</td>
             <td>{{ medication.period }}</td>
-            <td><input type="checkbox" class="taken" id="taken" name="taken"></td>
-            <td><a href="{{ url_for('taken', med_id = medication.id, taken = (request.form[taken]!=none))}}">Save Changes</a></td>
+            {% if medication.taken %}
+            <td><input type="checkbox" class="taken" id="{{ medication.id }}" name="{{ medication.id }}" checked="checked"/></td>
+            {% else %}
+            <td><input type="checkbox" class="taken" id="{{ medication.id }}" name="{{ medication.id }}"/></td>
+            {% endif %}
+            {% if (request.form.getlist(medication.id) == None) %}
+                <td><a href="{{ url_for('taken_med', med_id = medication.id, done = 'yes')}}">Save Changes</a></td>
+            {% else %}
+                <td><a href="{{ url_for('taken_med', med_id = medication.id, done = 'no')}}">Save Changes</a></td>
+            {% endif %}
         </tr>
     {% endfor %}
     </table>
