@@ -35,6 +35,13 @@
         </p>
         {% if title == "Register" %}
         <p>
+            {{ form.patient.label }}<br>
+            {{ form.patient(size=16) }}<br>
+            {% for error in form.patient.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
             {{ form.password.label }}<br>
             {{ form.password(size=32) }}<br>
             {% for error in form.password.errors %}
