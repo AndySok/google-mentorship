@@ -45,6 +45,10 @@ class User(UserMixin, db.Model):
         cycle = Cycle.query.filter_by(user_id=self.id).all()[n-1]
         return cycle
 
+    def med_authenticated(self, med_id):
+        medication = Medicine.query.filter_by(id=med_id).first()
+        return medication.user_id == self.id
+
 class Medicine(db.Model):
     __tablename__ = 'medicines'
 
