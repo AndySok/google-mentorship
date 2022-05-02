@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, ProfileForm
+from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, ProfileForm, TakenForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Medicine
 from werkzeug.urls import url_parse
@@ -83,7 +83,7 @@ def update_info():
 @login_required
 def medication():
     medications = current_user.check_medications()
-    #form = CycleTakenForm()
+    form = TakenForm()
     #for medication in medications:
     #    if form.validate_on_submit():
     #        if current_user.check_privileges():
@@ -97,8 +97,13 @@ def medication():
     #    if request.method == 'GET':
     #        form.cycle.data = medication.cycle.cycle
     #        form.taken.data = medication.taken
+    #if form.validate_on_submit():
+    #    for i in range(0, len(medications)):
+    #        medications[i].taken = [form.medications.taken[i]]
+    #elif request.method == 'GET':
+    #    form.medications.taken = [medication.taken for medication in medications]
     cycles = current_user.get_cycles()
-    return render_template('medication.html', title='Medication', medications=medications, cycles=cycles)
+    return render_template('medication.html', title='Medication', medications=medications, form=form, cycles=cycles)
 
 @app.route('/add_medication', methods=['GET', 'POST'])
 @login_required
@@ -130,7 +135,10 @@ def choose_medication():
             if medication is None:
                 flash('This product does not exist')
                 return redirect(url_for('choose_medication'))
-            return redirect(url_for('edit_medication', medication_id=medication.id))
+            elif current_user.med_authenticated(medication.id):
+                return redirect(url_for('edit_medication', medication_id=medication.id))
+                flash('You are not authorized to update this medication')
+            return render_template(url_for('choose_medication'))
         return render_template('choose_medication.html', title='Choose Medication', form=form)
     else:
         flash('You do not have update privileges.')
@@ -139,7 +147,7 @@ def choose_medication():
 @app.route('/edit_medication/<medication_id>', methods=['GET', 'POST'])
 @login_required
 def edit_medication(medication_id):
-    if current_user.check_privileges():
+    if current_user.check_privileges() and current_user.med_authenticated(medication_id):
         medication = Medicine.query.filter_by(id=medication_id).first()
         form = AddMedicationForm()
         if form.validate_on_submit():
@@ -166,7 +174,7 @@ def edit_medication(medication_id):
 @app.route('/delete_medication', methods=['GET', 'POST'])
 @login_required
 def delete_medication():
-    if current_user.check_privileges():
+    if current_user.check_privileges() and current_user.med_authenticated(medication_id):
         form = FindMedicationForm()
         if form.validate_on_submit():
             medication = Medicine.query.filter_by(name=form.name.data, user_id=current_user.id).first()
@@ -182,11 +190,17 @@ def delete_medication():
         flash('You do not have update privileges.')
         return redirect(url_for('medication'))
 
-@app.route('/taken/<med_id>/<taken>', methods=['POST'])
+@app.route('/taken_med/<med_id>/<done>', methods=['GET', 'POST'])
 @login_required
-def taken(med_id, taken):
-    medication = Medicine.query.filter_by(id=med_id, user_id=current_user.id).first()
-    medication.taken = taken
-    db.session.commit()
-    flash('Your changes have been saved.')
-    return redirect(url_for('medication'))
+def taken_med(med_id, done):
+    if current_user.med_authenticated(med_id):
+        medication = Medicine.query.filter_by(id=med_id, user_id=current_user.id).first()
+        if (done == "yes"):
+            medication.taken = True
+        else:
+            medication.taken = False
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('medication'))
+    else:
+        flash('Not authenticated to make changes.')

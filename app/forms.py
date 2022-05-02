@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, FloatField, FieldList
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, FloatField, FieldList, SelectMultipleField
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange, Optional
 from app.models import User
+from wtforms.widgets import ListWidget, CheckboxInput
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
@@ -52,3 +53,8 @@ class AddMedicationForm(FlaskForm):
 class FindMedicationForm(FlaskForm):
     name = StringField('Medication Name', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class TakenForm(FlaskForm):
+    medications = SelectMultipleField('Taken', validators=[Optional()], coerce=int,
+        widget=CheckboxInput())
+    submit = SubmitField('Update Changes')
