@@ -55,6 +55,8 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+        {% elif user.is_patient() %}
+        <p><a href="{{ url_for('caretaker_search') }}">Add Caretaker</a></p>
         {% endif %}
         <p>{{ form.submit() }}</p>
     </form>

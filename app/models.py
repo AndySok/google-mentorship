@@ -38,7 +38,12 @@ class User(UserMixin, db.Model):
 
     def set_caretaker(self, user):
         if not self.is_caretaker(user):
-            self.caretaker.append(user)
+            if not user.is_patient():
+                self.caretaker.append(user)
+                return 0
+            return 1
+        return 2
+
 
     def delete_caretaker(self, user):
         if self.is_caretaker(user):

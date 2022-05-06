@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, ProfileForm, EmptyForm
+from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, FindCaretakerForm, ProfileForm, EmptyForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Medicine
 from werkzeug.urls import url_parse
@@ -55,7 +55,7 @@ def register():
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('user_info.html', title='Register', form=form)
 
 @app.route('/update_info', methods=['GET', 'POST'])
 @login_required
@@ -75,7 +75,7 @@ def update_info():
             form.email.data = current_user.email
             form.update_privileges.data = current_user.update_privileges
         email = current_user.email
-        return render_template('register.html', title='Update Info', form=form, email=email)
+        return render_template('user_info.html', title='Update Info', form=form, email=email, user=current_user)
     else:
         flash('You do not have update privileges.')
         return redirect(url_for('index'))
@@ -115,13 +115,13 @@ def choose_medication():
         if form.validate_on_submit():
             medication = Medicine.query.filter_by(name=form.name.data, user_id=current_user.id).first()
             if medication is None:
-                flash('This product does not exist')
+                flash('This medication does not exist')
                 return redirect(url_for('choose_medication'))
             elif current_user.med_authenticated(medication.id):
                 return redirect(url_for('edit_medication', medication_id=medication.id))
                 flash('You are not authorized to update this medication')
             return render_template(url_for('choose_medication'))
-        return render_template('choose_medication.html', title='Choose Medication', form=form)
+        return render_template('search.html', title='Choose Medication', form=form)
     else:
         flash('You do not have update privileges.')
         return redirect(url_for('medication'))
@@ -167,7 +167,7 @@ def delete_medication():
             db.session.commit()
             flash('Medication deleted successfully')
             return redirect(url_for('medication'))
-        return render_template('choose_medication.html', title='Delete Medication', form=form)
+        return render_template('search.html', title='Delete Medication', form=form)
     else:
         flash('You do not have update privileges.')
         return redirect(url_for('medication'))
@@ -187,6 +187,18 @@ def taken_med(med_id, done):
     else:
         flash('Not authenticated to make changes.')
 
+@app.route('/caretaker_search', methods=['GET', 'POST'])
+@login_required
+def caretaker_search():
+    form = FindCaretakerForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None:
+            flash('This user does not exist')
+            return redirect(url_for('caretaker_search'))
+        return redirect(url_for('caretaker', user_id=user.id))
+    return render_template('search.html', title='Add Caretaker', form=form)
+
 @app.route('/caretaker/<user_id>', methods=['GET', 'POST'])
 @login_required
 def caretaker(user_id):
@@ -196,7 +208,12 @@ def caretaker(user_id):
         return redirect(url_for('index'))
     if user == current_user:
         flash('You cannot add yourself as a caretaker!')
-    current_user.set_caretaker(user)
-    db.session.commit()
-    flash('You set {} as a caretaker!'.format(user.fname))
+    set = current_user.set_caretaker(user)
+    if set == 0:
+        db.session.commit()
+        flash('You set {} as a caretaker!'.format(user.fname))
+    elif set == 1:
+        flash('{} is not a caretaker!'.format(user.fname))
+    elif set == 2:
+        flash('{} is already your caretaker!'.format(user.fname))
     return redirect(url_for('index'))

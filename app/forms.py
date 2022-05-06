@@ -55,5 +55,9 @@ class FindMedicationForm(FlaskForm):
     name = StringField('Medication Name', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+class FindCaretakerForm(FlaskForm):
+    email = StringField('Caretaker Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Submit')
+
 class EmptyForm(FlaskForm):
     submit = SubmitField('Submit')
