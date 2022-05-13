@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, FindCaretakerForm, ProfileForm, EmptyForm
+from app.forms import LoginForm, RegistrationForm, AddMedicationForm, CaretakerAddMedicationForm, CaretakerFindMedicationForm, FindMedicationForm, FindCaretakerForm, ProfileForm, EmptyForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Medicine
 from werkzeug.urls import url_parse
@@ -87,16 +87,27 @@ def medication():
     cycles = current_user.get_cycles()
     return render_template('medication.html', title='Medication', medications=medications, cycles=cycles)
 
+
 @app.route('/add_medication', methods=['GET', 'POST'])
 @login_required
 def add_medication():
     if current_user.check_privileges():
-        form = AddMedicationForm()
+        if current_user.is_patient():
+            form = AddMedicationForm()
+        else:
+            form = CaretakerAddMedicationForm()
         if form.validate_on_submit():
+            if current_user.is_patient():
+                med_user = current_user
+            else:
+                med_user = User.query.filter_by(email=form.email.data).first()
+                if med_user is None:
+                    flash('User {} not found'.format(form.email.data))
+                    return redirect(url_for('medication'))
             medication = Medicine(name = form.name.data, dose = form.dose.data,
-                pills = form.pills.data, period = form.period.data, user = current_user)
+                pills = form.pills.data, period = form.period.data, user = med_user)
             medication.add_to_cycle(form.cycle.data)
-            medication.add_to_cycle(form.cycle.data)
+            medication.add_to_cycle(form.cycle.data) #duplicate line because there is a bug when the call is only made once
             medication.cycle_id = medication.cycle.id
             db.session.add(medication)
             db.session.commit()
@@ -111,16 +122,26 @@ def add_medication():
 @login_required
 def choose_medication():
     if current_user.check_privileges():
-        form = FindMedicationForm()
+        if current_user.is_patient():
+            form = FindMedicationForm()
+        else:
+            form = CaretakerFindMedicationForm()
         if form.validate_on_submit():
-            medication = Medicine.query.filter_by(name=form.name.data, user_id=current_user.id).first()
+            if current_user.is_patient():
+                med_user = current_user
+            else:
+                med_user = User.query.filter_by(email=form.email.data).first()
+                if med_user is None:
+                    flash('User {} not found'.format(form.email.data))
+                    return redirect(url_for('medication'))
+            medication = Medicine.query.filter_by(name=form.name.data, user_id=med_user.id).first()
             if medication is None:
                 flash('This medication does not exist')
-                return redirect(url_for('choose_medication'))
+                return redirect(url_for('medication'))
             elif current_user.med_authenticated(medication.id):
                 return redirect(url_for('edit_medication', medication_id=medication.id))
-                flash('You are not authorized to update this medication')
-            return render_template(url_for('choose_medication'))
+            flash('You are not authorized to update this medication')
+            return render_template(url_for('medication'))
         return render_template('search.html', title='Choose Medication', form=form)
     else:
         flash('You do not have update privileges.')
@@ -156,16 +177,29 @@ def edit_medication(medication_id):
 @app.route('/delete_medication', methods=['GET', 'POST'])
 @login_required
 def delete_medication():
-    if current_user.check_privileges() and current_user.med_authenticated(medication_id):
-        form = FindMedicationForm()
+    if current_user.check_privileges():
+        if current_user.is_patient():
+            form = FindMedicationForm()
+        else:
+            form = CaretakerFindMedicationForm()
         if form.validate_on_submit():
-            medication = Medicine.query.filter_by(name=form.name.data, user_id=current_user.id).first()
+            if current_user.is_patient():
+                med_user = current_user
+            else:
+                med_user = User.query.filter_by(email=form.email.data).first()
+                if med_user is None:
+                    flash('User {} not found'.format(form.email.data))
+                    return redirect(url_for('medication'))
+            medication = Medicine.query.filter_by(name=form.name.data, user_id=med_user.id).first()
             if medication is None:
                 flash('This medication does not exist')
                 return redirect(url_for('delete_medication'))
-            db.session.delete(medication)
-            db.session.commit()
-            flash('Medication deleted successfully')
+            if current_user.med_authenticated(medication.id):
+                db.session.delete(medication)
+                db.session.commit()
+                flash('Medication deleted successfully')
+            else:
+                flash('You are not authenticated for this medication')
             return redirect(url_for('medication'))
         return render_template('search.html', title='Delete Medication', form=form)
     else:
@@ -176,7 +210,7 @@ def delete_medication():
 @login_required
 def taken_med(med_id, done):
     if current_user.med_authenticated(med_id):
-        medication = Medicine.query.filter_by(id=med_id, user_id=current_user.id).first()
+        medication = Medicine.query.filter_by(id=med_id).first()
         if (done == "yes"):
             medication.taken = True
         else:
