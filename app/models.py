@@ -44,7 +44,6 @@ class User(UserMixin, db.Model):
             return 1
         return 2
 
-
     def delete_caretaker(self, user):
         if self.is_caretaker(user):
             self.caretaker.remove(user)
@@ -65,11 +64,21 @@ class User(UserMixin, db.Model):
         return self.update_privileges
 
     def check_medications(self):
-        medications = Medicine.query.filter_by(user_id=self.id).all()
+        if self.is_patient():
+            medications = Medicine.query.filter_by(user_id=self.id).all()
+        else:
+            medications = Medicine.query.join(
+                patients, (patients.c.patient_id == Medicine.user_id)).filter(
+                    patients.c.caretaker_id == self.id)
         return medications
 
     def get_cycles(self):
-        cycles = Cycle.query.filter_by(user_id=self.id).all()
+        if self.is_patient():
+            cycles = Cycle.query.filter_by(user_id=self.id).all()
+        else:
+            cycles = Cycle.query.join(
+                patients, (patients.c.patient_id == Cycle.user_id)).filter(
+                    patients.c.caretaker_id == self.id)
         return cycles
 
     def get_cycle(self, n):
@@ -78,7 +87,10 @@ class User(UserMixin, db.Model):
 
     def med_authenticated(self, med_id):
         medication = Medicine.query.filter_by(id=med_id).first()
-        return medication.user_id == self.id
+        if self.is_patient():
+            return medication.user_id == self.id
+        else:
+            return medication.user.is_caretaker(self)
 
 class Medicine(db.Model):
     __tablename__ = 'medicines'

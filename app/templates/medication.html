@@ -12,6 +12,9 @@
             <th>Period</th>
             <th>Taken</th>
             <th>Update Changes</th>
+            {% if not current_user.is_patient() %}
+            <th>User</th>
+            {% endif %}
         </tr>
     {% for medication in medications %}
         <tr>
@@ -25,6 +28,9 @@
             <td><a href="{{ url_for('taken_med', med_id = medication.id, done = 'no')}}" class="take">Untake</a></td>
             {% else %}
             <td><a href="{{ url_for('taken_med', med_id = medication.id, done = 'yes')}}" class="take">Take</a></td>
+            {% endif %}
+            {% if not current_user.is_patient() %}
+            <td>{{ medication.user.fname }}</td>
             {% endif %}
         </tr>
     {% endfor %}

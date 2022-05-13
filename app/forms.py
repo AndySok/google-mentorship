@@ -51,8 +51,22 @@ class AddMedicationForm(FlaskForm):
     period = FloatField('Period (hrs)', validators=[DataRequired()])
     submit = SubmitField('Add')
 
+class CaretakerAddMedicationForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    dose = FloatField('Dose (mg)', validators=[DataRequired()])
+    cycle = IntegerField('Cycle', validators=[DataRequired()])
+    pills = IntegerField('Pills per Cycle', validators=[DataRequired()])
+    period = FloatField('Period (hrs)', validators=[DataRequired()])
+    email = StringField('User Email', validators=[Email()])
+    submit = SubmitField('Add')
+
 class FindMedicationForm(FlaskForm):
     name = StringField('Medication Name', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+class CaretakerFindMedicationForm(FlaskForm):
+    name = StringField('Medication Name', validators=[DataRequired()])
+    email = StringField('User Email', validators=[Email()])
     submit = SubmitField('Submit')
 
 class FindCaretakerForm(FlaskForm):
