@@ -37,3 +37,15 @@ ul, ol{
 .navbar {
   font-family: cursive;
 }
+
+.take {
+  background-color: #e7e7e7; /* Green */
+  border-radius: 12px;
+  color: black;
+  padding: 10px 50px;
+  text-align: center;
+  text-decoration: none;
+  font-family: "Helvetica Neue", Helvetica,Arial,sans-serif;
+  display: inline-block;
+  font-size: 14px;  
+}

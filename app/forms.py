@@ -15,6 +15,7 @@ class RegistrationForm(FlaskForm):
     lname = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     update_privileges = BooleanField('Update Privileges')
+    patient = BooleanField('Patient')
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
@@ -53,11 +54,28 @@ class AddMedicationForm(FlaskForm):
     submit = SubmitField('Confirm')
 
 
+class CaretakerAddMedicationForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    dose = FloatField('Dose (mg)', validators=[DataRequired()])
+    cycles = SelectMultipleField('Cycles', coerce=int, option_widget=CheckboxInput(), widget=ListWidget())
+
+    pills = IntegerField('Pills per Cycle', validators=[DataRequired()])
+    period = FloatField('Period (hrs)', validators=[DataRequired()])
+    email = StringField('User Email', validators=[Email()])
+    submit = SubmitField('Add')
+
 class FindMedicationForm(FlaskForm):
     name = StringField('Medication Name', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
-class TakenForm(FlaskForm):
-    medications = SelectMultipleField('Taken', validators=[Optional()], coerce=int,
-        widget=CheckboxInput())
-    submit = SubmitField('Update Changes')
+class CaretakerFindMedicationForm(FlaskForm):
+    name = StringField('Medication Name', validators=[DataRequired()])
+    email = StringField('User Email', validators=[Email()])
+    submit = SubmitField('Submit')
+
+class FindCaretakerForm(FlaskForm):
+    email = StringField('Caretaker Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Submit')
+
+class EmptyForm(FlaskForm):
+    submit = SubmitField('Submit')
