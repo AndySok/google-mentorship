@@ -2,6 +2,16 @@ from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
+#users_medicine = db.Table("Medicine",
+#    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+#    db.Column('medicine_id', db.Integer, db.ForeignKey('medicine.id')))
+
+patients = db.Table(
+    'patients',
+    db.Column('patient_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('caretaker_id', db.Integer, db.ForeignKey('users.id'))
+)
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -10,12 +20,36 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     update_privileges = db.Column(db.Boolean, index=True, default=False)
     password_hash = db.Column(db.String(128))
+    isPatient = db.Column(db.Boolean, index=True, default=True)
+    caretaker = db.relationship(
+        'User', secondary=patients,
+        primaryjoin=(patients.c.patient_id == id),
+        secondaryjoin=(patients.c.caretaker_id == id),
+        backref=db.backref('patients', lazy='dynamic'), lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.fname)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
+
+    def is_patient(self):
+        return self.isPatient
+
+    def set_caretaker(self, user):
+        if not self.is_caretaker(user):
+            if not user.is_patient():
+                self.caretaker.append(user)
+                return 0
+            return 1
+        return 2
+
+    def delete_caretaker(self, user):
+        if self.is_caretaker(user):
+            self.caretaker.remove(user)
+
+    def is_caretaker(self, user):
+        return self.caretaker.filter(patients.c.caretaker_id == user.id).count() > 0
 
     def create_cycles(self):
         cycle1 = Cycle(name="Cycle A", user=self)
@@ -29,9 +63,34 @@ class User(UserMixin, db.Model):
     def check_privileges(self):
         return self.update_privileges
 
+    def check_medications(self):
+        if self.is_patient():
+            medications = Medicine.query.filter_by(user_id=self.id).all()
+        else:
+            medications = Medicine.query.join(
+                patients, (patients.c.patient_id == Medicine.user_id)).filter(
+                    patients.c.caretaker_id == self.id)
+        return medications
+
+    # def get_cycles(self):
+    #     if self.is_patient():
+    #         cycles = Cycle.query.filter_by(user_id=self.id).all()
+    #     else:
+    #         cycles = Cycle.query.join(
+    #             patients, (patients.c.patient_id == Cycle.user_id)).filter(
+    #                 patients.c.caretaker_id == self.id)
+    #     return cycles
+    #
+    # def get_cycle(self, n):
+    #     cycle = Cycle.query.filter_by(user_id=self.id).all()[n-1]
+    #     return cycle
+
     def med_authenticated(self, med_id):
         medication = Medicine.query.filter_by(id=med_id).first()
-        return medication.user_id == self.id
+        if self.is_patient():
+            return medication.user_id == self.id
+        else:
+            return medication.user.is_caretaker(self)
 
 class Association(db.Model):
     __tablename__ = "association_table"
