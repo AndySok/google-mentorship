@@ -159,7 +159,6 @@ def edit_medication(medication_id):
         medication = Medicine.query.filter_by(id=medication_id).first()
         form = AddMedicationForm()
         form.cycles.choices = [(cycle.id, cycle.name) for cycle in current_user.cycles]
-        form.cycles.data = [cycle.id for cycle in medication.cycles]
 
         print(form.cycles.data)
 
@@ -181,6 +180,7 @@ def edit_medication(medication_id):
             form.dose.data = medication.dose
             form.pills.data = medication.pills
             form.period.data = medication.period
+            form.cycles.data = [cycle.id for cycle in medication.cycles]
 
         return render_template('add_medication.html', title='Edit Medication', form=form)
     else:
