@@ -18,13 +18,13 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-        <p>
-            {{ form.cycle.label }}<br>
-            {{ form.cycle(size=64) }}<br>
-            {% for error in form.cycle.errors %}
+        <div>
+            {{ form.cycles.label }}<br>
+            {{ form.cycles(multiple=True) }}<br>
+            {% for error in form.cycles.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
+        </div>
         <p>
             {{ form.pills.label }}<br>
             {{ form.pills(size=64) }}<br>
