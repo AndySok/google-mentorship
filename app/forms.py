@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, FloatField, FieldList, SelectMultipleField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange, Optional
 from app.models import User
-from wtforms.widgets import ListWidget, CheckboxInput
+from wtforms.widgets import ListWidget, CheckboxInput, TableWidget
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
@@ -43,12 +43,15 @@ class ProfileForm(FlaskForm):
             raise ValidationError('Please use a different username.')
 
 class AddMedicationForm(FlaskForm):
+
     name = StringField('Name', validators=[DataRequired()])
     dose = FloatField('Dose (mg)', validators=[DataRequired()])
-    cycle = IntegerField('Cycle', validators=[DataRequired()])
+    cycles = SelectMultipleField('Cycles', coerce=int, option_widget=CheckboxInput(), widget=ListWidget())
+
     pills = IntegerField('Pills per Cycle', validators=[DataRequired()])
     period = FloatField('Period (hrs)', validators=[DataRequired()])
-    submit = SubmitField('Add')
+    submit = SubmitField('Confirm')
+
 
 class FindMedicationForm(FlaskForm):
     name = StringField('Medication Name', validators=[DataRequired()])

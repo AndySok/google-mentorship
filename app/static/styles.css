@@ -28,6 +28,12 @@ tr:nth-child(odd){
   background-color: #C3D6EA;
 }
 
+ul, ol{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
 .navbar {
   font-family: cursive;
 }

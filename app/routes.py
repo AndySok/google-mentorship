@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, request, url_for, session
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, AddMedicationForm, FindMedicationForm, ProfileForm, TakenForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Medicine
+from app.models import User, Medicine, Cycle
 from werkzeug.urls import url_parse
 
 @app.route('/')
@@ -82,7 +82,7 @@ def update_info():
 @app.route('/medication', methods=['GET', 'POST'])
 @login_required
 def medication():
-    medications = current_user.check_medications()
+    medications = current_user.medicines
     form = TakenForm()
     #for medication in medications:
     #    if form.validate_on_submit():
@@ -102,7 +102,8 @@ def medication():
     #        medications[i].taken = [form.medications.taken[i]]
     #elif request.method == 'GET':
     #    form.medications.taken = [medication.taken for medication in medications]
-    cycles = current_user.get_cycles()
+    cycles = current_user.cycles
+    print(cycles)
     return render_template('medication.html', title='Medication', medications=medications, form=form, cycles=cycles)
 
 @app.route('/add_medication', methods=['GET', 'POST'])
@@ -110,14 +111,19 @@ def medication():
 def add_medication():
     if current_user.check_privileges():
         form = AddMedicationForm()
+
+        form.cycles.choices = [(cycle.id, cycle.name) for cycle in current_user.cycles]
+
         if form.validate_on_submit():
             medication = Medicine(name = form.name.data, dose = form.dose.data,
                 pills = form.pills.data, period = form.period.data, user = current_user)
-            medication.add_to_cycle(form.cycle.data)
-            medication.add_to_cycle(form.cycle.data)
-            medication.cycle_id = medication.cycle.id
+
+            cycles = Cycle.query.filter(Cycle.id.in_(form.cycles.data)).all()
+            medication.cycles = cycles
+
             db.session.add(medication)
             db.session.commit()
+
             flash('Congratulations, you have entered new medication!')
             return redirect(url_for('medication'))
         return render_template('add_medication.html', title='Add Medication', form=form)
@@ -150,22 +156,30 @@ def edit_medication(medication_id):
     if current_user.check_privileges() and current_user.med_authenticated(medication_id):
         medication = Medicine.query.filter_by(id=medication_id).first()
         form = AddMedicationForm()
+        form.cycles.choices = [(cycle.id, cycle.name) for cycle in current_user.cycles]
+        form.cycles.data = [cycle.id for cycle in medication.cycles]
+
+        print(form.cycles.data)
+
         if form.validate_on_submit():
             medication.name = form.name.data
             medication.dose = form.dose.data
-            medication.add_to_cycle(form.cycle.data)
-            medication.cycle_id = medication.cycle.id
             medication.pills = form.pills.data
             medication.period = form.period.data
+
+            cycles = Cycle.query.filter(Cycle.id.in_(form.cycles.data)).all()
+            medication.cycles = cycles
+
             db.session.commit()
             flash('Your changes have been saved.')
             return redirect(url_for('medication'))
         elif request.method == 'GET':
             form.name.data = medication.name
-            form.cycle.data = medication.cycle.cycle
+
             form.dose.data = medication.dose
             form.pills.data = medication.pills
             form.period.data = medication.period
+
         return render_template('add_medication.html', title='Edit Medication', form=form)
     else:
         flash('You do not have update privileges.')

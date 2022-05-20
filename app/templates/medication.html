@@ -8,7 +8,7 @@
             <th>Name</th>
             <th>Dose</th>
             <th>Pills</th>
-            <th>Cycle</th>
+            <th>Cycles</th>
             <th>Period</th>
             <th>Taken</th>
             <th>Update Changes</th>
@@ -18,7 +18,12 @@
             <td>{{ medication.name }}</td>
             <td>{{ medication.dose }}</td>
             <td>{{ medication.pills }}</td>
-            <td>{{ medication.cycle.cycle }}</td>
+            <td>
+                {% for cycle in medication.cycles %}
+                    {{cycle.name}}
+                {% endfor%}
+            </td>
+
             <td>{{ medication.period }}</td>
             {% if medication.taken %}
             <td><input type="checkbox" class="taken" id="{{ medication.id }}" name="{{ medication.id }}" checked="checked"/></td>
@@ -48,15 +53,15 @@
         </tr>
     {% for cycle in cycles %}
         <tr>
-            <td>{{ cycle.cycle }}</td>
+            <td>{{ cycle.name }}</td>
             <td>{{ cycle.time }}</td>
-            <td>{{ cycle.get_medications() }}</td>
-            <td>{{ cycle.get_medications() }}</td>
-            <td>{{ cycle.get_medications() }}</td>
-            <td>{{ cycle.get_medications() }}</td>
-            <td>{{ cycle.get_medications() }}</td>
-            <td>{{ cycle.get_medications() }}</td>
-            <td>{{ cycle.get_medications() }}</td>
+            <td>{{ cycle.medications }}</td>
+            <td>{{ cycle.medications }}</td>
+            <td>{{ cycle.medications }}</td>
+            <td>{{ cycle.medications }}</td>
+            <td>{{ cycle.medications }}</td>
+            <td>{{ cycle.medications }}</td>
+            <td>{{ cycle.medications }}</td>
         </tr>
     {% endfor %}
     </table>
