@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, url_for, session
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, AddMedicationForm, CaretakerAddMedicationForm, CaretakerFindMedicationForm, FindMedicationForm, FindCaretakerForm, ProfileForm, EmptyForm
+from app.forms import LoginForm, RegistrationForm, AddMedicationForm, CaretakerAddMedicationForm, CaretakerFindMedicationForm, FindMedicationForm, FindCaretakerForm, ProfileForm, EmptyForm, CycleTimeForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Medicine, Cycle
 from werkzeug.urls import url_parse
@@ -123,35 +123,6 @@ def add_medication():
         flash('You do not have update privileges.')
         return redirect(url_for('medication'))
 
-@app.route('/choose_medication', methods=['GET', 'POST'])
-@login_required
-def choose_medication():
-    if current_user.check_privileges():
-        if current_user.is_patient():
-            form = FindMedicationForm()
-        else:
-            form = CaretakerFindMedicationForm()
-        if form.validate_on_submit():
-            if current_user.is_patient():
-                med_user = current_user
-            else:
-                med_user = User.query.filter_by(email=form.email.data).first()
-                if med_user is None:
-                    flash('User {} not found'.format(form.email.data))
-                    return redirect(url_for('medication'))
-            medication = Medicine.query.filter_by(name=form.name.data, user_id=med_user.id).first()
-            if medication is None:
-                flash('This medication does not exist')
-                return redirect(url_for('medication'))
-            elif current_user.med_authenticated(medication.id):
-                return redirect(url_for('edit_medication', medication_id=medication.id))
-            flash('You are not authorized to update this medication')
-            return render_template(url_for('medication'))
-        return render_template('search.html', title='Choose Medication', form=form)
-    else:
-        flash('You do not have update privileges.')
-        return redirect(url_for('medication'))
-
 @app.route('/edit_medication/<medication_id>', methods=['GET', 'POST'])
 @login_required
 def edit_medication(medication_id):
@@ -264,3 +235,26 @@ def caretaker(user_id):
     elif set == 2:
         flash('{} is already your caretaker!'.format(user.fname))
     return redirect(url_for('index'))
+
+@app.route('/cycle/<cycle_id>', methods=['GET', 'POST'])
+@login_required
+def cycle(cycle_id):
+    if current_user.check_privileges():
+        cycle = Cycle.query.filter_by(id=cycle_id).first()
+        if not current_user.is_patient() and not cycle.user.is_caretaker(current_user):
+            flash('You are not authenticated to edit this cycle!')
+            return redirect(url_for('medication'))
+        form = CycleTimeForm()
+
+        if form.validate_on_submit():
+            cycle.time = form.time.data
+            db.session.commit()
+            flash('Your changes have been saved.')
+            return redirect(url_for('medication'))
+        elif request.method == 'GET':
+            form.time.data = cycle.time
+
+        return render_template('edit_cycle.html', title='Edit Cycle', form=form)
+    else:
+        flash('You do not have update privileges.')
+        return redirect(url_for('medication'))

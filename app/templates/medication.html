@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+    <div class="no-print">
     <h1>{% block title %}{{title }}{% endblock %}</h1>
     <br></br>
     <table>
@@ -18,7 +19,7 @@
         </tr>
     {% for medication in medications %}
         <tr>
-            <td>{{ medication.name }}</td>
+            <td><a href="{{ url_for('edit_medication', medication_id = medication.id)}}">{{ medication.name }}</a></td>
             <td>{{ medication.dose }}</td>
             <td>{{ medication.pills }}</td>
             <td>
@@ -41,6 +42,8 @@
     {% endfor %}
     </table>
     <br>
+    </div>
+    <div class="example-print">
     <table>
         <tr>
             <th>Cycle</th>
@@ -53,22 +56,26 @@
             <th>Saturday</th>
             <th>Sunday</th>
         </tr>
-    {% for cycle in cycles %}
-        <tr>
-            <td>{{ cycle.name }}</td>
-            <td>{{ cycle.time }}</td>
-            <td>{{ cycle.medicines }}</td>
-            <td>{{ cycle.medicines }}</td>
-            <td>{{ cycle.medicines }}</td>
-            <td>{{ cycle.medicines }}</td>
-            <td>{{ cycle.medicines }}</td>
-            <td>{{ cycle.medicines }}</td>
-            <td>{{ cycle.medicines }}</td>
-        </tr>
-    {% endfor %}
+        {% for cycle in cycles %}
+            <tr>
+                <td><a href="{{ url_for('cycle', cycle_id = cycle.id)}}">{{ cycle.name }}</a></td>
+                <td>{{ cycle.time }}</td>
+                <td>{{ cycle.medicines }}</td>
+                <td>{{ cycle.medicines }}</td>
+                <td>{{ cycle.medicines }}</td>
+                <td>{{ cycle.medicines }}</td>
+                <td>{{ cycle.medicines }}</td>
+                <td>{{ cycle.medicines }}</td>
+                <td>{{ cycle.medicines }}</td>
+            </tr>
+        {% endfor %}
     </table>
+    </div>
+    <div class="no-print">
+    <br></br>
+    <button onclick="window.print();" class="example-print">Print Table</button>
     <br></br>
     <p><a href="{{ url_for('add_medication') }}">Add Medication</a></p>
-    <p><a href="{{ url_for('choose_medication')}}">Edit Medication</a></p>
     <p><a href="{{ url_for('delete_medication') }}">Delete Medication</a></p>
+    </div>
 {% endblock %}
