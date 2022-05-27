@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, FloatField, FieldList, SelectMultipleField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateTimeField, TimeField, IntegerField, FloatField, FieldList, SelectMultipleField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange, Optional
 from app.models import User
 from wtforms.widgets import ListWidget, CheckboxInput, TableWidget
@@ -78,4 +78,8 @@ class FindCaretakerForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class EmptyForm(FlaskForm):
+    submit = SubmitField('Submit')
+
+class CycleTimeForm(FlaskForm):
+    time = TimeField('Time', validators=[DataRequired()])#format='%H:%M:%S', validators=[DataRequired()])
     submit = SubmitField('Submit')
