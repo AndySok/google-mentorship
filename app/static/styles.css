@@ -16,7 +16,7 @@ table {
 }
 
 table:hover {
-  transform: scale(1.03);
+  transform: scale(1.01);
 }
 
 th {
@@ -47,5 +47,14 @@ ul, ol{
   text-decoration: none;
   font-family: "Helvetica Neue", Helvetica,Arial,sans-serif;
   display: inline-block;
-  font-size: 14px;  
+  font-size: 14px;
+}
+
+@media print {
+    .example-print {
+       display: block;
+    }
+    .no-print {
+        display: none;
+    }
 }
