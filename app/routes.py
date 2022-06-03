@@ -4,15 +4,16 @@ from app.forms import LoginForm, RegistrationForm, AddMedicationForm, CaretakerA
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Medicine, Cycle
 from werkzeug.urls import url_parse
+from datetime import datetime, time
 
 @app.route('/')
 @app.route('/index')
 def index():
+    flash_message()
     if current_user.is_authenticated:
         user = User.query.filter_by(id=current_user.id).first()
-        return render_template('index.html', title='Home Page', user=user)
-    guest = User.query.filter_by(id=1).first()
-    return render_template('index.html', title='Home Page', user=guest)
+        return render_template('index.html', title='Home Page', name=user.fname)
+    return render_template('index.html', title='Home Page', name="guest")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -60,6 +61,7 @@ def register():
 @app.route('/update_info', methods=['GET', 'POST'])
 @login_required
 def update_info():
+    flash_message()
     if current_user.check_privileges():
         form = ProfileForm()
         if form.validate_on_submit():
@@ -83,6 +85,7 @@ def update_info():
 @app.route('/medication', methods=['GET', 'POST'])
 @login_required
 def medication():
+    flash_message()
     medications = current_user.medicines
     cycles = current_user.cycles
     return render_template('medication.html', title='Medication', medications=medications, cycles=cycles)
@@ -94,7 +97,6 @@ def add_medication():
     if current_user.check_privileges():
         if current_user.is_patient():
             form = AddMedicationForm()
-
         else:
             form = CaretakerAddMedicationForm()
         form.cycles.choices = [(cycle.id, cycle.name) for cycle in current_user.cycles]
@@ -196,6 +198,7 @@ def taken_med(med_id, done):
     if current_user.med_authenticated(med_id):
         medication = Medicine.query.filter_by(id=med_id).first()
         if (done == "yes"):
+            medication.time_taken = datetime.now().time()
             medication.taken = True
         else:
             medication.taken = False
@@ -208,6 +211,7 @@ def taken_med(med_id, done):
 @app.route('/caretaker_search', methods=['GET', 'POST'])
 @login_required
 def caretaker_search():
+    flash_message()
     form = FindCaretakerForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -258,3 +262,10 @@ def cycle(cycle_id):
     else:
         flash('You do not have update privileges.')
         return redirect(url_for('medication'))
+
+def flash_message():
+    if current_user.is_authenticated:
+        medications = current_user.medicines
+        for medication in medications:
+            if medication.check_taken() == False:
+                flash('{} not taken'.format(medication.name))

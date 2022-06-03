@@ -1,6 +1,7 @@
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from datetime import time, timedelta, datetime
 
 #users_medicine = db.Table("Medicine",
 #    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
@@ -53,6 +54,7 @@ class User(UserMixin, db.Model):
 
     def create_cycles(self):
         cycle1 = Cycle(name="Cycle A", user=self)
+        cycle1.time = time(hour=9, minute=0)
         cycle2 = Cycle(name="Cycle B", user=self)
         cycle3 = Cycle(name="Cycle C", user=self)
         cycle4 = Cycle(name="Cycle D", user=self)
@@ -108,6 +110,7 @@ class Medicine(db.Model):
     pills = db.Column(db.Integer, index=True)
     period = db.Column(db.Float, index=True)
     taken = db.Column(db.Boolean, index=True, default=False)
+    time_taken = db.Column(db.Time, index=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('User',backref=db.backref('medicines', lazy=True))
@@ -116,6 +119,25 @@ class Medicine(db.Model):
 
     def __repr__(self):
         return '{}'.format(self.name)
+
+    def reset_taken(self):
+        if self.taken == True:
+            time_taken = datetime(2022, 1, 1, hour=self.time_taken.hour, minute=self.time_taken.minute, second=self.time_taken.second)
+            time_taken = time_taken + timedelta(minutes = 10)
+            time = time_taken.time()
+            for cycle in self.cycles:
+                if datetime.now().time() > cycle.time and cycle.time > (time):
+                    self.taken = False
+
+    def check_taken(self):
+        self.reset_taken()
+        if self.taken == False:
+            for cycle in self.cycles:
+                if datetime.now().time() > cycle.time:
+                    return False
+            return True
+        return True
+
 
     # def add_to_cycle(self, cycle_number):
     #     self.cycle = Cycle.query.filter_by(cycle=cycle_number, user_id=self.user_id).first()
@@ -134,6 +156,7 @@ class Cycle(db.Model):
 
     def __repr__(self):
         return '<Cycle {} for {}>'.format(self.name, self.user)
+
 
     # def get_medications(self):
     #     medications = Medicine.query.filter_by(cycle_id=self.id).all()
