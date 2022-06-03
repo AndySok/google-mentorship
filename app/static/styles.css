@@ -38,7 +38,7 @@ ul, ol{
   font-family: cursive;
 }
 
-.take {
+.take, .print {
   background-color: #e7e7e7; /* Green */
   border-radius: 12px;
   color: black;
