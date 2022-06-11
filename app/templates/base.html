@@ -6,7 +6,8 @@
 {% endblock %}
 
 {% block title %}
-    {% if title %}{{ title }} - Unnamed Project 333{% else %}Welcome to Unnamed Project 333!{% endif %}
+    {% if title %}{{ title }} -
+    The VALE Project{% else %}Welcome to The VALE Project{% endif %}
 {% endblock %}
 
 {% block navbar %}
@@ -19,15 +20,16 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url_for('index') }}">Unnamed Project 333</a>
+            <a class="navbar-brand" href="{{ url_for('index') }}">VALE Project</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('index') }}">Home</a></li>
+              <li><a href="{{ url_for('index') }}">Home</a></li>
                 <li><a href="{{ url_for('medication') }}">Medication</a></li>
-                <li><a href="{{ url_for('index') }}">ChatBot</a></li>
-                <li><a href="{{ url_for('index') }}">About Us</a></li>
-                <li><a href="{{ url_for('index') }}">Contact</a></li>
+                <li><a href="{{ url_for('chat_bot') }}">ChatBot</a></li>
+                <li><a href="{{ url_for('our_story') }}">Our Story</a></li>
+                <li><a href="{{ url_for('about_us') }}">About Us</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_anonymous %}
