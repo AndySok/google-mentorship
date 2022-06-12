@@ -1,37 +1,5 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<!DOCTYPE html>
-<html>
-<head>
-<title>Home</title>
-</head>
-<body>
-
-<h3>Information about the Vale Project's Critical Features:</h3>
-<p>
-  Our project consists of two major components: a medication interface and an artificial intelligence program.
-<br> <br>
-The medication aspect of the website is the core of the project. We have two primary different users: elderly and caretakers. The user will be able to input information about current medications that they take, including information about dosage, times of the day to take a specified medication, and how many pills are in each prescription before a new medication needs to be issued. To begin interacting with this information, follow this link.
-<br> <br>
-
-	The AI component of the website aims to increase ease of navigating the website. It is available in two different formats: a chat bot, where you can interact directly and get help with any possible questions about the program, as well as in a voice automated button, that is comparable to that of Alexa but has more of a focus on helping senior citizens in particular and can allow users to upload their medication information this way rather than through typing it in.
-  <br> <br>
-  For more information about our prototype, please click on this link for our full proposal.
-  <a href="https://docs.google.com/document/d/1i38ON1avVVGIMWcVWvVew23Ai7xbx0ySyEYebAEne5g/edit?usp=sharing">VALE Software Design Document</a>
-  <img src="{{url_for('static', filename='EugeneYooPic.jpg')}}" alt="Girl in a jacket" width="500" height="600">
-
-  <br> <br>
-
-The VALE Project is made possible with support from mentor Cedric Chow, an Engineering Director at Google.
-<br> <br>
-
-Privacy Concerns:
-<br>
-We take privacy very seriously, and because of this, we have worked hard to ensure that all inputted information is only available to users. We don’t sell any information to other companies, and we also don’t abuse any information that we are given.
-
-</p>
-
-</body>
-</html>
+Hello {{ name }}, welcome to the homepage.
 {% endblock %}

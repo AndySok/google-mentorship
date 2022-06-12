@@ -125,6 +125,7 @@ class Medicine(db.Model):
             time_taken = datetime(2022, 1, 1, hour=self.time_taken.hour, minute=self.time_taken.minute, second=self.time_taken.second)
             time_taken = time_taken + timedelta(minutes = 10)
             time = time_taken.time()
+            print(self.cycles)
             for cycle in self.cycles:
                 if datetime.now().time() > cycle.time and cycle.time > (time):
                     self.taken = False
