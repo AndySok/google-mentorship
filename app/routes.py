@@ -15,6 +15,23 @@ def index():
         return render_template('index.html', title='Home Page', name=user.fname)
     return render_template('index.html', title='Home Page', name="guest")
 
+@app.route('/our_story', methods=["GET"])
+def our_story():
+     return render_template('our_story.html')
+
+@app.route('/chat_bot', methods=["GET"])
+def chat_bot():
+     return render_template('chat_bot.html')
+
+@app.route('/about_us', methods=["GET"])
+def about_us():
+     return render_template('about_us.html')
+
+@app.route('/contact', methods=["GET"])
+def contact():
+     return render_template('contact.html')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
