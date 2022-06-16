@@ -17,6 +17,8 @@ convention = {
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.debug = True
+
 bootstrap = Bootstrap(app)
 metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(app, metadata=metadata)
