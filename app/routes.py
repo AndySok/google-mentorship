@@ -4,7 +4,7 @@ from app.forms import LoginForm, RegistrationForm, AddMedicationForm, CaretakerA
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Medicine, Cycle
 from werkzeug.urls import url_parse
-from datetime import datetime, time
+from datetime import datetime, time, date
 
 @app.route('/')
 @app.route('/index')
@@ -13,7 +13,7 @@ def index():
     if current_user.is_authenticated:
         user = User.query.filter_by(id=current_user.id).first()
         return render_template('index.html', title='Home Page', name=user.fname)
-    return render_template('index.html', title='Home Page', name="guest")
+    return render_template('index.html', title='Home Page', name='guest')
 
 @app.route('/our_story', methods=["GET"])
 def our_story():
@@ -105,6 +105,16 @@ def medication():
     flash_message()
     medications = current_user.medicines
     cycles = current_user.cycles
+
+    for medication in medications:
+        times = [cycle.time for cycle in sorted(medication.cycles, key=lambda cycle: cycle.time)]
+        for t1, t2 in zip(times, times[1:]):
+            duration = datetime.combine(date.min, t2) - datetime.combine(date.min, t1)
+            if(duration.seconds / 3600 > medication.period):
+                flash(f'Warning: Medication {medication} cycles misaligned')
+                break
+
+
     return render_template('medication.html', title='Medication', medications=medications, cycles=cycles)
 
 
@@ -214,7 +224,7 @@ def delete_medication():
 def taken_med(med_id, done):
     if current_user.med_authenticated(med_id):
         medication = Medicine.query.filter_by(id=med_id).first()
-        if (done == "yes"):
+        if (done == 'yes'):
             medication.time_taken = datetime.now().time()
             medication.taken = True
         else:
@@ -266,14 +276,23 @@ def cycle(cycle_id):
             flash('You are not authenticated to edit this cycle!')
             return redirect(url_for('medication'))
         form = CycleTimeForm()
+        form.medications.choices = [(medication.id, medication.name) for medication in current_user.medicines]
+
+        print(form.medications.choices)
 
         if form.validate_on_submit():
             cycle.time = form.time.data
+
+            medications = Medicine.query.filter(Medicine.id.in_(form.medications.data)).all()
+            cycle.medicines = medications
+
+
             db.session.commit()
             flash('Your changes have been saved.')
             return redirect(url_for('medication'))
         elif request.method == 'GET':
             form.time.data = cycle.time
+            form.medications.data = [medication.id for medication in cycle.medicines]
 
         return render_template('edit_cycle.html', title='Edit Cycle', form=form)
     else:
@@ -281,8 +300,13 @@ def cycle(cycle_id):
         return redirect(url_for('medication'))
 
 def flash_message():
+    str = ''
     if current_user.is_authenticated:
         medications = current_user.medicines
         for medication in medications:
             if medication.check_taken() == False:
-                flash('{} not taken'.format(medication.name))
+                if str != '':
+                    str += ', '
+                str += medication.name
+        if str != '':
+            flash(str + ' not taken')
