@@ -53,11 +53,14 @@ class User(UserMixin, db.Model):
         return self.caretaker.filter(patients.c.caretaker_id == user.id).count() > 0
 
     def create_cycles(self):
-        cycle1 = Cycle(name="Cycle A", user=self)
+        cycle1 = Cycle(name="Morning", user=self)
         cycle1.time = time(hour=9, minute=0)
-        cycle2 = Cycle(name="Cycle B", user=self)
-        cycle3 = Cycle(name="Cycle C", user=self)
-        cycle4 = Cycle(name="Cycle D", user=self)
+        cycle2 = Cycle(name="Lunch", user=self)
+        cycle2.time = time(hour=12, minute=30)
+        cycle3 = Cycle(name="Dinner", user=self)
+        cycle1.time = time(hour=17, minute=30)
+        cycle4 = Cycle(name="Night", user=self)
+        cycle1.time = time(hour=20, minute=0)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -73,19 +76,6 @@ class User(UserMixin, db.Model):
                 patients, (patients.c.patient_id == Medicine.user_id)).filter(
                     patients.c.caretaker_id == self.id)
         return medications
-
-    # def get_cycles(self):
-    #     if self.is_patient():
-    #         cycles = Cycle.query.filter_by(user_id=self.id).all()
-    #     else:
-    #         cycles = Cycle.query.join(
-    #             patients, (patients.c.patient_id == Cycle.user_id)).filter(
-    #                 patients.c.caretaker_id == self.id)
-    #     return cycles
-    #
-    # def get_cycle(self, n):
-    #     cycle = Cycle.query.filter_by(user_id=self.id).all()[n-1]
-    #     return cycle
 
     def med_authenticated(self, med_id):
         medication = Medicine.query.filter_by(id=med_id).first()
@@ -138,9 +128,14 @@ class Medicine(db.Model):
             return True
         return True
 
+    def get_cycles(self):
+        str = ""
+        for i in range(len(self.cycles)-1):
+            str += self.cycles[i].name + ", "
+        if len(self.cycles) > 0:
+            str += self.cycles[len(self.cycles)-1].name
+        return str
 
-    # def add_to_cycle(self, cycle_number):
-    #     self.cycle = Cycle.query.filter_by(cycle=cycle_number, user_id=self.user_id).first()
 
 class Cycle(db.Model):
     __tablename__ = 'cycles'
@@ -158,9 +153,17 @@ class Cycle(db.Model):
         return '<Cycle {} for {}>'.format(self.name, self.user)
 
 
-    # def get_medications(self):
-    #     medications = Medicine.query.filter_by(cycle_id=self.id).all()
-    #     return medications
+    def get_medications(self):
+        str = ""
+        for i in range(len(self.medicines)-1):
+            str += self.medicines[i].__repr__() + ", "
+        if len(self.medicines) > 0:
+            str += self.medicines[len(self.medicines)-1].__repr__()
+        return str
+
+    def get_time(self):
+        return self.time.strftime("%I:%M%p")
+
 
 @login.user_loader
 def load_user(id):
