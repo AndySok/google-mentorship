@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
+from models import User
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -28,5 +29,7 @@ migrate = Migrate(app, db, render_as_batch=True)
 login = LoginManager(app)
 login.init_app(app)
 login.login_view = 'login'
+
+wa.whoosh_index(app, User)
 
 from app import routes, models
