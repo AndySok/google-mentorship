@@ -82,4 +82,5 @@ class EmptyForm(FlaskForm):
 
 class CycleTimeForm(FlaskForm):
     time = TimeField('Time', validators=[DataRequired()])#format='%H:%M:%S', validators=[DataRequired()])
+    medications = SelectMultipleField('Medications in Cycle', coerce=int, option_widget=CheckboxInput(), widget=ListWidget())
     submit = SubmitField('Submit')

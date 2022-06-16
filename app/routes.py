@@ -265,14 +265,23 @@ def cycle(cycle_id):
             flash('You are not authenticated to edit this cycle!')
             return redirect(url_for('medication'))
         form = CycleTimeForm()
+        form.medications.choices = [(medication.id, medication.name) for medication in current_user.medicines]
+
+        print(form.medications.choices)
 
         if form.validate_on_submit():
             cycle.time = form.time.data
+
+            medications = Medicine.query.filter(Medicine.id.in_(form.medications.data)).all()
+            cycle.medicines = medications
+
+
             db.session.commit()
             flash('Your changes have been saved.')
             return redirect(url_for('medication'))
         elif request.method == 'GET':
             form.time.data = cycle.time
+            form.medications.data = [medication.id for medication in cycle.medicines]
 
         return render_template('edit_cycle.html', title='Edit Cycle', form=form)
     else:
