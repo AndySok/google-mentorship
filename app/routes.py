@@ -13,7 +13,7 @@ def index():
     if current_user.is_authenticated:
         user = User.query.filter_by(id=current_user.id).first()
         return render_template('index.html', title='Home Page', name=user.fname)
-    return render_template('index.html', title='Home Page', name="guest")
+    return render_template('index.html', title='Home Page', name='guest')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -125,19 +125,19 @@ def add_medication():
         flash('You do not have update privileges.')
         return redirect(url_for('medication'))
 
-@app.route('/our_story', methods=["GET"])
+@app.route('/our_story', methods=['GET'])
 def our_story():
     return render_template('our_story.html')
 
-@app.route('/chat_bot', methods=["GET"])
+@app.route('/chat_bot', methods=['GET'])
 def chat_bot():
     return render_template('chat_bot.html')
 
-@app.route('/about_us', methods=["GET"])
+@app.route('/about_us', methods=['GET'])
 def about_us():
     return render_template('about_us.html')
 
-@app.route('/contact', methods=["GET"])
+@app.route('/contact', methods=['GET'])
 def contact():
     return render_template('contact.html')
 
@@ -213,7 +213,7 @@ def delete_medication():
 def taken_med(med_id, done):
     if current_user.med_authenticated(med_id):
         medication = Medicine.query.filter_by(id=med_id).first()
-        if (done == "yes"):
+        if (done == 'yes'):
             medication.time_taken = datetime.now().time()
             medication.taken = True
         else:
@@ -273,7 +273,7 @@ def cycle(cycle_id):
             cycle.time = form.time.data
 
             medications = Medicine.query.filter(Medicine.id.in_(form.medications.data)).all()
-            medication.cycles = cycles
+            cycle.medicines = medications
 
 
             db.session.commit()
@@ -289,8 +289,13 @@ def cycle(cycle_id):
         return redirect(url_for('medication'))
 
 def flash_message():
+    str = ''
     if current_user.is_authenticated:
         medications = current_user.medicines
         for medication in medications:
             if medication.check_taken() == False:
-                flash('{} not taken'.format(medication.name))
+                if str != '':
+                    str += ', '
+                str += medication.name
+        if str != '':
+            flash(str + ' not taken')
