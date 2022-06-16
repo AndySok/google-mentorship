@@ -22,10 +22,7 @@
             <td><a href="{{ url_for('edit_medication', medication_id = medication.id)}}">{{ medication.name }}</a></td>
             <td>{{ medication.dose }}</td>
             <td>{{ medication.pills }}</td>
-            <td>
-                {% for cycle in medication.cycles %}
-                    {{cycle.name}}
-                {% endfor%}
+            <td>{{ medication.get_cycles() }}
             </td>
 
             <td>{{ medication.period }}</td>
@@ -59,14 +56,14 @@
         {% for cycle in cycles %}
             <tr>
                 <td><a href="{{ url_for('cycle', cycle_id = cycle.id)}}">{{ cycle.name }}</a></td>
-                <td>{{ cycle.time }}</td>
-                <td>{{ cycle.medicines }}</td>
-                <td>{{ cycle.medicines }}</td>
-                <td>{{ cycle.medicines }}</td>
-                <td>{{ cycle.medicines }}</td>
-                <td>{{ cycle.medicines }}</td>
-                <td>{{ cycle.medicines }}</td>
-                <td>{{ cycle.medicines }}</td>
+                <td>{{ cycle.get_time() }}</td>
+                <td>{{ cycle.get_medications() }}</td>
+                <td>{{ cycle.get_medications() }}</td>
+                <td>{{ cycle.get_medications() }}</td>
+                <td>{{ cycle.get_medications() }}</td>
+                <td>{{ cycle.get_medications() }}</td>
+                <td>{{ cycle.get_medications() }}</td>
+                <td>{{ cycle.get_medications() }}</td>
             </tr>
         {% endfor %}
     </table>
