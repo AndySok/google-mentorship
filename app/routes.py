@@ -4,7 +4,7 @@ from app.forms import LoginForm, RegistrationForm, AddMedicationForm, CaretakerA
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Medicine, Cycle
 from werkzeug.urls import url_parse
-from datetime import datetime, time
+from datetime import datetime, time, date
 
 @app.route('/')
 @app.route('/index')
@@ -88,6 +88,16 @@ def medication():
     flash_message()
     medications = current_user.medicines
     cycles = current_user.cycles
+
+    for medication in medications:
+        times = [cycle.time for cycle in sorted(medication.cycles, key=lambda cycle: cycle.time)]
+        for t1, t2 in zip(times, times[1:]):
+            duration = datetime.combine(date.min, t2) - datetime.combine(date.min, t1)
+            if(duration.seconds / 3600 > medication.period):
+                flash(f'Warning: Medication {medication} cycles misaligned')
+                break
+
+
     return render_template('medication.html', title='Medication', medications=medications, cycles=cycles)
 
 
