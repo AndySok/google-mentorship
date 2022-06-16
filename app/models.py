@@ -60,7 +60,7 @@ class User(UserMixin, db.Model):
         cycle3 = Cycle(name="Dinner", user=self)
         cycle3.time = time(hour=17, minute=30)
         cycle4 = Cycle(name="Night", user=self)
-        cycle4.time = time(hour=10, minute=0)
+        cycle4.time = time(hour=20, minute=0)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
