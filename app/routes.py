@@ -11,7 +11,6 @@ from datetime import datetime, time, date
 def index():
     flash_message()
     date = datetime.now().strftime("%A %B %d, %Y")
-    print(date)
     if current_user.is_authenticated:
         user = User.query.filter_by(id=current_user.id).first()
         return render_template('index.html', title='Home Page', name=user.fname, date=date)
