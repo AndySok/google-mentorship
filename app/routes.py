@@ -10,26 +10,32 @@ from datetime import datetime, time, date
 @app.route('/index')
 def index():
     flash_message()
+    date = datetime.now().strftime("%A %B %d, %Y")
+    print(date)
     if current_user.is_authenticated:
         user = User.query.filter_by(id=current_user.id).first()
-        return render_template('index.html', title='Home Page', name=user.fname)
-    return render_template('index.html', title='Home Page', name='guest')
+        return render_template('index.html', title='Home Page', name=user.fname, date=date)
+    return render_template('index.html', title='Home Page', name='guest', date=date)
 
 @app.route('/our_story', methods=["GET"])
 def our_story():
-     return render_template('our_story.html')
+    red = flash_message()
+    return render_template('our_story.html')
 
 @app.route('/chat_bot', methods=["GET"])
 def chat_bot():
-     return render_template('chat_bot.html')
+    red = flash_message()
+    return render_template('chat_bot.html')
 
 @app.route('/about_us', methods=["GET"])
 def about_us():
-     return render_template('about_us.html')
+    red = flash_message()
+    return render_template('about_us.html')
 
 @app.route('/contact', methods=["GET"])
 def contact():
-     return render_template('contact.html')
+    red = flash_message()
+    return render_template('contact.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -102,17 +108,30 @@ def update_info():
 @app.route('/medication', methods=['GET', 'POST'])
 @login_required
 def medication():
-    flash_message()
+    red = flash_message()
     medications = current_user.medicines
     cycles = current_user.cycles
 
+    str = ''
     for medication in medications:
+        misaligned = False
         times = [cycle.time for cycle in sorted(medication.cycles, key=lambda cycle: cycle.time)]
         for t1, t2 in zip(times, times[1:]):
             duration = datetime.combine(date.min, t2) - datetime.combine(date.min, t1)
-            if(duration.seconds / 3600 > medication.period):
-                flash(f'Warning: Medication {medication} cycles misaligned')
+            if(duration.seconds / 3600 > (medication.period + 2) or duration.seconds / 3600 < (medication.period - 2)):
+                if str != '':
+                    str += ', '
+                str += medication.name
+                misaligned = True
                 break
+        if not misaligned:
+            duration = datetime.combine(date.min, times[-1]) - datetime.combine(date.min, times[0])
+            if(duration.seconds / 3600 > (medication.period + 2) or duration.seconds / 3600 < (medication.period - 2)):
+                if str != '':
+                    str += ', '
+                str += medication.name
+    if str != '':
+        flash('Warning: ' + str + ' cycles misaligned')
 
 
     return render_template('medication.html', title='Medication', medications=medications, cycles=cycles)
@@ -230,7 +249,6 @@ def taken_med(med_id, done):
         else:
             medication.taken = False
         db.session.commit()
-        flash('Your changes have been saved.')
         return redirect(url_for('medication'))
     else:
         flash('Not authenticated to make changes.')
@@ -300,6 +318,7 @@ def cycle(cycle_id):
         return redirect(url_for('medication'))
 
 def flash_message():
+    error = False
     str = ''
     if current_user.is_authenticated:
         medications = current_user.medicines
@@ -309,4 +328,6 @@ def flash_message():
                     str += ', '
                 str += medication.name
         if str != '':
-            flash(str + ' not taken')
+            flash('Warning: ' + str + ' not taken')
+            error = True
+    return error

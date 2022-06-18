@@ -6,7 +6,8 @@
 {% endblock %}
 
 {% block title %}
-    {% if title %}{{ title }} - VALE Google Mentorship{% else %}Welcome to the VALE Google Mentorship Website!{% endif %}
+    {% if title %}{{ title }} -
+    The VALE Project{% else %}Welcome to The VALE Project{% endif %}
 {% endblock %}
 
 {% block navbar %}
@@ -19,16 +20,16 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url_for('index') }}">VALE Google Mentorship</a>
+            <a class="navbar-brand" href="{{ url_for('index') }}">VALE Project</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('index') }}">Home</a></li>
+              <li><a href="{{ url_for('index') }}">Home</a></li>
                 <li><a href="{{ url_for('medication') }}">Medication</a></li>
                 <li><a href="{{ url_for('chat_bot') }}">ChatBot</a></li>
+                <li><a href="{{ url_for('our_story') }}">Our Story</a></li>
                 <li><a href="{{ url_for('about_us') }}">About Us</a></li>
                 <li><a href="{{ url_for('contact') }}">Contact</a></li>
-                <li><a href="{{ url_for('our_story') }}">Our Story</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_anonymous %}
@@ -44,16 +45,27 @@
 {% endblock %}
 
 {% block content %}
+    <div class="flex-wrapper">
     <div class="container">
     <div class="no-print">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
-            <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% if message[0:7] == 'Warning' %}
+                  <div class="alert alert-danger" role="alert">{{ message }}</div>
+                {% else %}
+                  <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% endif %}
             {% endfor %}
         {% endif %}
         {% endwith %}
     </div>
         {% block app_content %}{% endblock %}
+    </div>
+    <footer>
+      The VALE Project is made possible with support from mentor Cedric Chow, an Engineering Director at Google.
+      <br>
+      Privacy: All inputted information is only available to users. We don’t sell any information to other companies, and we also don’t abuse any information that we are given.
+    </footer>
     </div>
 {% endblock %}
