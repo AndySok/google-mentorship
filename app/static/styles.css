@@ -1,3 +1,7 @@
+.navbar {
+  background-color: #C3D6EA;
+}
+
 table, th, td {
   border: 1px solid;
   padding: 8px;
@@ -20,7 +24,7 @@ table:hover {
 }
 
 th {
-  color: #1C1D21;
+  color: white;
   background-color: #004E98;
 }
 
@@ -57,4 +61,52 @@ ul, ol{
     .no-print {
         display: none;
     }
+}
+
+.welcome {
+    font-family: verdana;
+    border: 2px solid #641d1b;
+    border-radius: 8px;
+    text-align:center;
+    margin-left: 10px;
+    margin-right: 10px;
+    line-height: 1;
+    background-color: #FF784F;
+}
+
+.medication-information {
+    float: left;
+    margin-left: 130px;
+}
+
+.ai-information {
+    float: right;
+    margin-right: 130px;
+}
+
+.medication-information, .ai-information {
+    height: 420px;
+    width: 420px;
+    background-color: #FFE19C;
+    border: 2px solid #641d1b;
+    border-radius: 8px;
+    padding: 45px;
+    font-size: 18px;
+}
+
+.information {
+    padding-bottom: 420px;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #C3D6EA;
+}
+
+.flex-wrapper {
+  display: flex;
+  min-height: 90vh;
+  flex-direction: column;
+  justify-content: space-between;
 }
