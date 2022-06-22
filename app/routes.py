@@ -178,8 +178,6 @@ def edit_medication(medication_id):
         form = AddMedicationForm()
         form.cycles.choices = [(cycle.id, cycle.name) for cycle in current_user.cycles]
 
-        print(form.cycles.data)
-
         if form.validate_on_submit():
             medication.name = form.name.data
             medication.dose = form.dose.data
@@ -294,8 +292,6 @@ def cycle(cycle_id):
             return redirect(url_for('medication'))
         form = CycleTimeForm()
         form.medications.choices = [(medication.id, medication.name) for medication in current_user.medicines]
-
-        print(form.medications.choices)
 
         if form.validate_on_submit():
             cycle.time = form.time.data

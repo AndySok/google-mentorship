@@ -8,31 +8,35 @@
 </head>
 <body>
 
-<h1>Get to know who we are!</h1>
-  <br>
-  <h2>Eugene Yoo</h2>
-  <img src="{{url_for('static', filename='EugeneY1.jpg')}}" width="225" height="300">
-<p>
-  Eugene is a current junior at Stuyvesant High School. His favorite language to code in is Java. Outside of Computer Science, he enjoys playing chess and violin competitively. He became a chess National Master at the age of 14 and is currently ranked in the top 20 in the country. He also has performed the violin at numerous prestigious concert halls, including Lincoln Center and Carnegie Hall, and for the last four years has attended the Manhattan School of Music’s Pre-College Division.
-</p>
-<br> <br>
-<h2>Vernon Hughes</h2>
-  <img src="{{url_for('static', filename='Vernon.jpg')}}" width="225" height="275">
-<p>
-Vernon is also a current junior at Stuyvesant High School. He is proficient in Python, C/C++, HTML/CSS, Java and JavaScript. He is the captain of Stuyvesant's Cross Country and Track and Field teams and plays the violin, having performed at Carnegie Hall, Lincoln Center, and Symphony Space. At Stuyvesant, he is the VP of Web Development for ARISTA and a writer for the Spectator sports department. Outside of school, he works at a lab at Columbia University that is part of the XENON collaboration.
-</p>
-<br> <br>
-<h2>Andrey Sokolov</h2>
-<img src="{{url_for('static', filename='Andrey.png')}}" width="225" height="200">
-<p>
-  Andrey is too a current junior at Stuyvesant High School! He has used various frameworks to build websites in the past, including raw NextJS and website-builders like Stackbit and Sqaurespace. On the back-end side of the spectrum, he has used Rails on Rails connected to PostgreSQL, although he is currently trying to figure out MongoDB and its advantages over other database frameworks. At Stuyvesant, he is involved in the Student Union, Stuyvesant Model UN, and ARISTA. In his free time, he works as a Curriculum coordination for Perennial Prep, a non-profit organization founded by Stuy students to tutor underprivileged kids!
-</p>
-  <br> <br>
-  <h2>Lucas Lee</h2>
-<p>
-  Lucas is a senior at Stuyvesant High School. He is experienced with Java, C, HTML/CSS, Python, JavaScript (ReactJS/JQuery), Scheme Lisp, and Swift/SwiftUI. He has done  competitive coding in Codeforces contests and USACO and is also the Head of Software Engineering for FIRST Technical Challenge team 310 at Stuyvesant, programming in Java to qualify for the 2020 World Championship. Over the past two summers, he took part in a paid internship as a Junior Software Developer at ECS Federal in order to aid in the processing of video data, using Wireshark to analyze network traffic and operating Docker images to run applications and took a course in machine learning in health sciences at MIT Beaverworks. He also worked in an internship at HKP Solutions as an iOS Integration Manager, dealing in creating frontend UI for an iOS app and resolving merge conflicts between the different branches of progress. He was previously a part of the Google Mentorship project dealing with a project in AI enhanced audio inpainting.
-</p>
-
+    <h1>Get to know who we are!</h1>
+    <br>
+    <div class="vernon-bio">
+        <h2><span class="letter">V</span>ernon Hughes</h2>
+        <img src="{{url_for('static', filename='Vernon.jpg')}}" width="225" height="275">
+        <p>
+          Vernon is also a current junior at Stuyvesant High School. He is proficient in Python, C/C++, HTML/CSS, Java and JavaScript. He is the captain of Stuyvesant's Cross Country and Track and Field teams and plays the violin, having performed at Carnegie Hall, Lincoln Center, and Symphony Space. At Stuyvesant, he is the VP of Web Development for ARISTA and a writer for the Spectator sports department. Outside of school, he works at a lab at Columbia University that is part of the XENON collaboration.
+        </p>
+    </div>
+    <div class="andrey-bio">
+        <h2><span class="letter">A</span>ndrey Sokolov</h2>
+        <img src="{{url_for('static', filename='Andrey.png')}}" width="225" height="200">
+        <p>
+          Andrey is too a current junior at Stuyvesant High School! He has used various frameworks to build websites in the past, including raw NextJS and website-builders like Stackbit and Sqaurespace. On the back-end side of the spectrum, he has used Rails on Rails connected to PostgreSQL, although he is currently trying to figure out MongoDB and its advantages over other database frameworks. At Stuyvesant, he is involved in the Student Union, Stuyvesant Model UN, and ARISTA. In his free time, he works as a Curriculum coordination for Perennial Prep, a non-profit organization founded by Stuy students to tutor underprivileged kids!
+        </p>
+    </div>
+    <div class="lucas-bio">
+        <h2><span class="letter">L</span>ucas Lee</h2>
+        <p>
+          Lucas is a senior at Stuyvesant High School. He is experienced with Java, C, HTML/CSS, Python, JavaScript (ReactJS/JQuery), Scheme Lisp, and Swift/SwiftUI. He has done  competitive coding in Codeforces contests and USACO and is also the Head of Software Engineering for FIRST Technical Challenge team 310 at Stuyvesant, programming in Java to qualify for the 2020 World Championship. Over the past two summers, he took part in a paid internship as a Junior Software Developer at ECS Federal in order to aid in the processing of video data, using Wireshark to analyze network traffic and operating Docker images to run applications and took a course in machine learning in health sciences at MIT Beaverworks. He also worked in an internship at HKP Solutions as an iOS Integration Manager, dealing in creating frontend UI for an iOS app and resolving merge conflicts between the different branches of progress. He was previously a part of the Google Mentorship project dealing with a project in AI enhanced audio inpainting.
+        </p>
+    </div>
+    <div class="eugene-bio">
+        <h2><span class="letter">E</span>ugene Yoo</h2>
+        <img src="{{url_for('static', filename='EugeneY1.jpg')}}" width="225" height="300">
+        <p>
+          Eugene is a current junior at Stuyvesant High School. His favorite language to code in is Java. Outside of Computer Science, he enjoys playing chess and violin competitively. He became a chess National Master at the age of 14 and is currently ranked in the top 20 in the country. He also has performed the violin at numerous prestigious concert halls, including Lincoln Center and Carnegie Hall, and for the last four years has attended the Manhattan School of Music’s Pre-College Division.
+        </p>
+    </div>
 </body>
 </html>
 {% endblock %}
