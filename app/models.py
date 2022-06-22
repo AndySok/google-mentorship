@@ -3,10 +3,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import time, timedelta, datetime
 
-#users_medicine = db.Table("Medicine",
-#    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-#    db.Column('medicine_id', db.Integer, db.ForeignKey('medicine.id')))
-
 patients = db.Table(
     'patients',
     db.Column('patient_id', db.Integer, db.ForeignKey('users.id')),
