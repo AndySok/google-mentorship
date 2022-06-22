@@ -21,10 +21,10 @@ def our_story():
     red = flash_message()
     return render_template('our_story.html')
 
-@app.route('/chat_bot', methods=["GET"])
-def chat_bot():
-    red = flash_message()
-    return render_template('chat_bot.html')
+#@app.route('/chat_bot', methods=["GET"])
+#def chat_bot():
+#    red = flash_message()
+#    return render_template('chat_bot.html')
 
 @app.route('/about_us', methods=["GET"])
 def about_us():
