@@ -11,6 +11,7 @@ patients = db.Table(
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     fname = db.Column(db.String(64), index=True)
     lname = db.Column(db.String(64), index=True)
@@ -18,6 +19,7 @@ class User(UserMixin, db.Model):
     update_privileges = db.Column(db.Boolean, index=True, default=False)
     password_hash = db.Column(db.String(128))
     isPatient = db.Column(db.Boolean, index=True, default=True)
+
     caretaker = db.relationship(
         'User', secondary=patients,
         primaryjoin=(patients.c.patient_id == id),
